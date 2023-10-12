@@ -1,0 +1,40 @@
+version: '3.8'
+
+networks:
+  frontend:
+  backend:
+
+services:
+  sql-weather-api:
+    container_name: sql-weather-api
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - MSSQL_SA_PASSWORD=M123@pass
+    ports:
+      - 8001:1433
+    networks:
+      - backend
+  weather-api:
+    container_name: weather-api
+    image: mohamedfouadmohamed/weatherapinew
+    build: 
+      context: .
+      dockerfile: weatherapi/Dockerfile
+    ports:
+      - 8000:80
+    depends_on:
+      - sql-weather-api
+    networks:
+      - backend
+      - frontend
+  store-management:
+    container_name: store-management
+    image: mohamedfouadmohamed/storemanagement
+    build: 
+      context: .
+      dockerfile: StoreManagement/Dockerfile
+    ports:
+      - 8002:80
+    networks:
+      - frontend
